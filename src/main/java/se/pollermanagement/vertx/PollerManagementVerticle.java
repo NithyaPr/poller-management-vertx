@@ -18,11 +18,14 @@ import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.Configuration;
 import se.pollermanagement.vertx.configuration.Config;
 import se.pollermanagement.vertx.handlers.ServiceHandler;
+import se.pollermanagement.vertx.handlers.UserHandler;
 import se.pollermanagement.vertx.service.Services;
+import se.pollermanagement.vertx.service.Users;
 import se.pollermanagement.vertx.service.impl.ServicesImpl;
+import se.pollermanagement.vertx.service.impl.UsersImpl;
 
 @Slf4j
-public class ServiceVerticle  extends AbstractVerticle {
+public class PollerManagementVerticle extends AbstractVerticle {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
     @Override
@@ -63,6 +66,14 @@ public class ServiceVerticle  extends AbstractVerticle {
         router.get("/api/service/list").handler(new ServiceHandler(services)::getServices);
         router.delete("/api/service/{serviceId}").handler(new ServiceHandler(services)::deleteService);
         router.put("/api/service/{serviceId}").handler(new ServiceHandler(services)::updateService);
+
+        Users users = new UsersImpl(pool);
+
+        router.post("/api/user").handler(new UserHandler(users)::addUser);
+        router.get("/api/user/{userId}").handler(new UserHandler(users)::getUser);
+        router.get("/api/user/list").handler(new UserHandler(users)::getUsers);
+        router.delete("/api/user/{userId}").handler(new UserHandler(users)::deleteUser);
+        router.put("/api/user/{userId}").handler(new UserHandler(users)::updateUser);
     }
 
     private JDBCPool getJdbcPool(Config config) {
